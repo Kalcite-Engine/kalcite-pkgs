@@ -1,0 +1,49 @@
+// Git subprocesses are host I/O; the grammar and security policy are KLC.
+
+public bool git_hex_byte(u8 byte) {
+    return (byte >= 48 && byte <= 57) || (byte >= 65 && byte <= 70) || (byte >= 97 && byte <= 102);
+}
+
+public bool git_revision_valid(String[128] revision) {
+    u32 length = Text.length(revision);
+    if length < 7 || length > 64 { return false; }
+    u32 index = 0;
+    while index < length {
+        if !git_hex_byte(Text.byte_at(revision, index)) { return false; }
+        index += 1;
+    }
+    return true;
+}
+
+public bool git_reference_valid(String[256] reference) {
+    u32 length = Text.length(reference);
+    if length == 0 { return false; }
+    u32 index = 0;
+    while index < length {
+        u8 byte = Text.byte_at(reference, index);
+        if byte <= 32 || byte == 127 || byte == 126 || byte == 94 || byte == 58 || byte == 63 || byte == 42 || byte == 91 || byte == 92 { return false; }
+        index += 1;
+    }
+    return true;
+}
+
+public bool git_subdirectory_valid(String[256] subdirectory) {
+    u32 length = Text.length(subdirectory);
+    if length == 0 || Text.byte_at(subdirectory, 0) == 47 { return false; }
+    u32 index = 0;
+    u32 dots = 0;
+    while index < length {
+        u8 byte = Text.byte_at(subdirectory, index);
+        if byte <= 32 || byte == 127 || byte == 92 { return false; }
+        if byte == 47 {
+            if dots == 2 { return false; }
+            dots = 0;
+        } else if byte == 46 {
+            dots += 1;
+        } else {
+            dots = 0;
+        }
+        index += 1;
+    }
+    return dots != 2;
+}

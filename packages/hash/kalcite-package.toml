@@ -1,0 +1,7 @@
+[package]
+name = "hash"
+version = "0.1.0"
+language = "klc"
+entry = "src/lib.klc"
+license = "MIT"
+description = "Deterministic allocation-free hashes for bounded Kalcite strings"

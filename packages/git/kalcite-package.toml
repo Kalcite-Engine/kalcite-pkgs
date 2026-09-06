@@ -1,0 +1,7 @@
+[package]
+name = "git"
+version = "0.1.0"
+language = "klc"
+entry = "src/lib.klc"
+license = "MIT"
+description = "Git source, revision and subdirectory validation for Kally packages"
