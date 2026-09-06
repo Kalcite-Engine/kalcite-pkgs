@@ -1,0 +1,28 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check package metadata
+        run: |
+          test -f packages/hash/kalcite-package.toml
+          test -f packages/filesystem/kalcite-package.toml
+          test -f packages/http/kalcite-package.toml
+          test -f packages/git/kalcite-package.toml
+      - name: Compile KLC package sources
+        run: |
+          git clone --depth 1 https://github.com/Kalcite-Engine/kalcite.git ../kalcite
+          for source in packages/*/src/lib.klc; do
+            cargo run --quiet --manifest-path ../kalcite/Cargo.toml -p kalcite-cli -- check "$source"
+          done

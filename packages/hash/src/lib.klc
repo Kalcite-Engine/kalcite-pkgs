@@ -1,0 +1,28 @@
+// Allocation-free deterministic hashes.  Input is bounded by the caller's
+// String capacity and no temporary buffer is allocated.
+
+public u32 hash_fnv1a_32(String[512] bytes) {
+    u32 value = 2166136261;
+    u32 index = 0;
+    while index < Text.length(bytes) {
+        value = (value ^ Text.byte_at_u32(bytes, index)) * 16777619;
+        index += 1;
+    }
+    return value;
+}
+
+public u32 hash_adler32(String[512] bytes) {
+    u32 a = 1;
+    u32 b = 0;
+    u32 index = 0;
+    while index < Text.length(bytes) {
+        a = (a + Text.byte_at_u32(bytes, index)) % 65521;
+        b = (b + a) % 65521;
+        index += 1;
+    }
+    return b * 65536 + a;
+}
+
+public u32 hash_combine(u32 left, u32 right) {
+    return (left ^ right) * 16777619;
+}

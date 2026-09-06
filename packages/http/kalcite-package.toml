@@ -1,0 +1,7 @@
+[package]
+name = "http"
+version = "0.1.0"
+language = "klc"
+entry = "src/lib.klc"
+license = "MIT"
+description = "Portable HTTP and HTTPS request validation helpers"

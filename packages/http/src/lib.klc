@@ -1,0 +1,32 @@
+// Transport is provided by a platform capability.  Request validation remains
+// KLC so it behaves identically on every supported host.
+
+public bool http_status_is_success(u16 status) { return status >= 200 && status < 300; }
+public bool http_status_is_redirect(u16 status) { return status >= 300 && status < 400; }
+public u16 https_default_port() { return 443; }
+
+public bool http_header_name_valid(String[128] name) {
+    u32 length = Text.length(name);
+    if length == 0 { return false; }
+    u32 index = 0;
+    while index < length {
+        u8 byte = Text.byte_at(name, index);
+        bool alpha = (byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122);
+        bool digit = byte >= 48 && byte <= 57;
+        if !alpha && !digit && byte != 45 { return false; }
+        index += 1;
+    }
+    return true;
+}
+
+public bool http_method_valid(String[16] method) {
+    u32 length = Text.length(method);
+    if length < 3 || length > 7 { return false; }
+    u32 index = 0;
+    while index < length {
+        u8 byte = Text.byte_at(method, index);
+        if byte < 65 || byte > 90 { return false; }
+        index += 1;
+    }
+    return true;
+}

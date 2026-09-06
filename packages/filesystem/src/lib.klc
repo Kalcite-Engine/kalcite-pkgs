@@ -1,0 +1,35 @@
+// Filesystem I/O itself is capability-gated by the target.  This package owns
+// the portable path policy, so adapters never receive absolute or traversing
+// paths from normal KLC code.
+
+public bool filesystem_safe_relative_path(String[512] path) {
+    u32 length = Text.length(path);
+    if length == 0 || Text.byte_at(path, 0) == 47 || Text.byte_at(path, 0) == 92 { return false; }
+    u32 index = 0;
+    u32 dots = 0;
+    while index < length {
+        u8 byte = Text.byte_at(path, index);
+        if byte <= 32 || byte == 127 || byte == 58 || byte == 92 { return false; }
+        if byte == 47 {
+            if dots == 2 { return false; }
+            dots = 0;
+        } else if byte == 46 {
+            dots += 1;
+        } else {
+            dots = 0;
+        }
+        index += 1;
+    }
+    return dots != 2;
+}
+
+public u32 filesystem_path_depth(String[512] path) {
+    if !filesystem_safe_relative_path(path) { return 0; }
+    u32 depth = 1;
+    u32 index = 0;
+    while index < Text.length(path) {
+        if Text.byte_at(path, index) == 47 { depth += 1; }
+        index += 1;
+    }
+    return depth;
+}
